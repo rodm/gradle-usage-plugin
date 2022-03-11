@@ -19,6 +19,7 @@ project {
         id(vcsId)
         name = "gradle-usage-plugin"
         url = "https://github.com/rodm/gradle-usage-plugin.git"
+        branch = "refs/heads/main"
         branchSpec = """
             +:refs/heads/(main)
             +:refs/tags/(*)
