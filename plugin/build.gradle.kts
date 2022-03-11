@@ -53,8 +53,4 @@ tasks {
         testClassesDirs = sourceSets["functional"].output.classesDirs
         classpath = sourceSets["functional"].runtimeClasspath
     }
-
-    check {
-        dependsOn(named("functionalTest"))
-    }
 }
