@@ -99,6 +99,25 @@ project {
             }
         }
 
+        stage("Functional Tests") {
+            matrix {
+                axes {
+                    "Java"("8", "11")
+                }
+                build {
+                    val javaVersion = axes["Java"]
+                    id("BuildFunctionalTestJava${javaVersion}")
+                    name = "Build - Functional Test - Java ${javaVersion}"
+                    templates(buildTemplate)
+
+                    params {
+                        param("gradle.tasks", "clean functionalTest")
+                        param("java.home", "%java${javaVersion}.home%")
+                    }
+                }
+            }
+        }
+
         stage ("Publish") {
             build {
                 id("TriggerSnapshotBuilds")
