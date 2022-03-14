@@ -1,7 +1,9 @@
 
 plugins {
-    `java-gradle-plugin`
-    groovy
+    id ("java-gradle-plugin")
+    id ("groovy")
+    id ("org.gradle.jacoco")
+    id ("org.sonarqube") version "3.3"
 }
 
 version = "0.1-SNAPSHOT"
@@ -44,6 +46,13 @@ gradlePlugin {
 tasks {
     test {
         useJUnitPlatform()
+        finalizedBy(named("jacocoTestReport"))
+    }
+
+    named<JacocoReport>("jacocoTestReport") {
+        reports {
+            xml.required.set(true)
+        }
     }
 
     register("functionalTest", Test::class.java) {
