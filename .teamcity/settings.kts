@@ -97,6 +97,17 @@ project {
                     }
                 }
             }
+
+            build {
+                templates(buildTemplate)
+                id("ReportCodeQuality")
+                name = "Report - Code Quality"
+
+                params {
+                    param("gradle.opts", "%sonar.opts%")
+                    param("gradle.tasks", "clean build sonarqube")
+                }
+            }
         }
 
         stage("Functional Tests") {
