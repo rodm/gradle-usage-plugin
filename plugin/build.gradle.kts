@@ -43,6 +43,13 @@ gradlePlugin {
     }
 }
 
+sonarqube {
+    properties {
+        property("sonar.projectKey", "${group}:${rootProject.name}")
+        property("sonar.projectName", rootProject.name)
+    }
+}
+
 tasks {
     test {
         useJUnitPlatform()
