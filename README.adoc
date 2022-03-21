@@ -1,0 +1,73 @@
+= Gradle Usage plugin
+:plugin-id: com.github.rodm.gradle-usage
+:uri-github-project: https://github.com/rodm/gradle-usage-plugin
+:uri-github-actions: {uri-github-project}/actions
+:uri-github-status: {uri-github-project}/workflows/Build/badge.svg
+:uri-shields-gradle-portal: https://img.shields.io/gradle-plugin-portal/v
+:uri-apache-license: https://www.apache.org/licenses/LICENSE-2.0.html[Apache License, Version 2.0]
+:uri-gradle-plugin-portal: https://plugins.gradle.org
+:uri-gradle-plugin: {uri-gradle-plugin-portal}/plugin/{plugin-id}
+
+image:{uri-github-status}?branch=main["Build Status", link="{uri-github-actions}"]
+image:{uri-shields-gradle-portal}/{plugin-id}}]?label=Gradle%20Plugin%20Portal[Gradle Plugin Portal, link="{uri-gradle-plugin}"]
+
+The plugin adds a new task that scans a directory tree for Gradle projects and produces a report
+listing the projects and the version of Gradle used.
+
+== Supported Gradle and Java versions
+
+The plugin requires Gradle 7.0 or later and Java 1.8 or later.
+
+== Building the plugin
+
+To build the plugin and run the unit tests run
+
+    ./gradlew -s check
+
+To run the functional tests run
+
+    ./gradlew -s functionalTest
+
+== Using the plugin
+
+The plugin is published on the {uri-gradle-plugin-portal}[Gradle Plugin Portal]:
+
+* `{plugin-id}` - Provides a task to scan a directory for Gradle projects.
+
+Refer to the Gradle Plugin Portal for instructions on how to apply the {uri-gradle-plugin-portal}plugin/{plugin-id}
+
+=== Tasks
+
+* `usage` : Scans a directory and subdirectories for Gradle projects and outputs a report listing the Gradle
+projects and the version used by each Gradle project.
+The task takes an argument `--dir` followed by a directory to scan.
+
+==== Report
+
+Run the command providing a directory to search
+
+    ./gradlew usage --dir ../Projects
+
+The report output is written to `build/reports/usage/usage.txt`.
+
+[source]
+[subs="attributes"]
+----
+Found 6 Gradle projects
+  5.5.1  /Users/rod/Projects/asciidoctor-gradle-plugin
+  7.0.2  /Users/rod/Projects/teamcity-jmx-plugin
+    6.5  /Users/rod/Projects/jbake-gradle-plugin
+  7.0.2  /Users/rod/Projects/gradle-usage-plugin
+    6.0  /Users/rod/Projects/gradle-teamcity-plugin
+    6.8  /Users/rod/Projects/teamcity-gradle-init-scripts
+Summary
+  7.0.2 used by 2 projects
+    6.8 used by 1 projects
+    6.0 used by 1 projects
+    6.5 used by 1 projects
+  5.5.1 used by 1 projects
+----
+
+== License
+
+This plugin is available under the {uri-apache-license}.
