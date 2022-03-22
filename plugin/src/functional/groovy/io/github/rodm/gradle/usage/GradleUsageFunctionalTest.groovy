@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.rodm.gradle.usage
+package io.github.rodm.gradle.usage
 
 import org.gradle.testkit.runner.GradleRunner
 import org.junit.jupiter.api.BeforeEach
@@ -40,7 +40,7 @@ class GradleUsageFunctionalTest {
     void init() {
         dir.resolve('build.gradle') << """
             plugins {
-                id('com.github.rodm.gradle-usage')
+                id('io.github.rodm.gradle-usage')
             }
         """
     }

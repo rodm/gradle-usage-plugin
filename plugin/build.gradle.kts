@@ -2,12 +2,12 @@
 plugins {
     id ("java-gradle-plugin")
     id ("groovy")
-    id ("org.gradle.jacoco")
+    id ("jacoco")
     id ("org.sonarqube") version "3.3"
 }
 
 version = "0.1-SNAPSHOT"
-group = "com.github.rodm"
+group = "io.github.rodm"
 
 repositories {
     mavenCentral()
@@ -36,9 +36,10 @@ gradlePlugin {
 
     plugins {
         register("plugin") {
-            id = "com.github.rodm.gradle-usage"
+            id = "io.github.rodm.gradle-usage"
             displayName = "Gradle Usage plugin"
-            implementationClass = "com.github.rodm.gradle.usage.GradleUsagePlugin"
+            description = "A plugin that scans a directory tree and produces a report of Gradle projects and versions used."
+            implementationClass = "io.github.rodm.gradle.usage.GradleUsagePlugin"
         }
     }
 }

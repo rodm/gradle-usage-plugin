@@ -1,5 +1,5 @@
 = Gradle Usage plugin
-:plugin-id: com.github.rodm.gradle-usage
+:plugin-id: io.github.rodm.gradle-usage
 :uri-github-project: https://github.com/rodm/gradle-usage-plugin
 :uri-github-actions: {uri-github-project}/actions
 :uri-github-status: {uri-github-project}/workflows/Build/badge.svg
@@ -46,7 +46,7 @@ The task takes an argument `--dir` followed by a directory to scan.
 
 Run the command providing a directory to search
 
-    ./gradlew usage --dir ../Projects
+    ./gradlew usage --dir ~/Projects
 
 The report output is written to `build/reports/usage/usage.txt`.
 

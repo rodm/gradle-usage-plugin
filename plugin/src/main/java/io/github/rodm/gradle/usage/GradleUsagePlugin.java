@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.rodm.gradle.usage;
+package io.github.rodm.gradle.usage;
 
 import org.gradle.api.Project;
 import org.gradle.api.Plugin;
