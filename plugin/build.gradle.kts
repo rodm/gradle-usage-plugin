@@ -53,7 +53,7 @@ gradlePlugin {
 pluginBundle {
     website = "https://github.com/rodm/gradle-usage-plugin"
     vcsUrl = "https://github.com/rodm/gradle-usage-plugin"
-    tags = listOf("gradle", "usage")
+    tags = listOf("usage")
 }
 
 sonarqube {
