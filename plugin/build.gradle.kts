@@ -3,11 +3,17 @@ plugins {
     id ("java-gradle-plugin")
     id ("groovy")
     id ("jacoco")
+    id ("maven-publish")
+    id ("com.gradle.plugin-publish") version "0.20.0"
     id ("org.sonarqube") version "3.3"
 }
 
 version = "0.1-SNAPSHOT"
 group = "io.github.rodm"
+
+base {
+    archivesBaseName = "gradle-usage-plugin"
+}
 
 repositories {
     mavenCentral()
@@ -42,6 +48,12 @@ gradlePlugin {
             implementationClass = "io.github.rodm.gradle.usage.GradleUsagePlugin"
         }
     }
+}
+
+pluginBundle {
+    website = "https://github.com/rodm/gradle-usage-plugin"
+    vcsUrl = "https://github.com/rodm/gradle-usage-plugin"
+    tags = listOf("gradle", "usage")
 }
 
 sonarqube {
