@@ -35,20 +35,16 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static io.github.rodm.gradle.usage.GradleProjectFinder.WRAPPER_PROPERTIES_FILE;
 import static java.lang.String.format;
 import static java.nio.file.Files.exists;
 
 public abstract class GradleUsageTask extends DefaultTask {
-
-    static final String SETTINGS_GRADLE = "settings.gradle";
-    static final String SETTINGS_GRADLE_KTS = "settings.gradle.kts";
-    static final Path WRAPPER_PROPERTIES_FILE = Paths.get("gradle", "wrapper", "gradle-wrapper.properties");
 
     @InputDirectory
     @PathSensitive(PathSensitivity.RELATIVE)
@@ -70,18 +66,10 @@ public abstract class GradleUsageTask extends DefaultTask {
         storeReport(output, getOutputDirectory().file("usage.txt"));
     }
 
-    private static boolean isGradleProject(Path path) {
-        return exists(path.resolve(SETTINGS_GRADLE))
-                || exists(path.resolve(SETTINGS_GRADLE_KTS))
-                || exists(path.resolve(WRAPPER_PROPERTIES_FILE));
-    }
-
     private static List<GradleProject> scanPath(Path path) {
         try {
-            List<Path> gradleProjects = Files.walk(path)
-                .filter(p -> p.toFile().isDirectory())
-                .filter(GradleUsageTask::isGradleProject)
-                .collect(Collectors.toList());
+            GradleProjectFinder finder = new GradleProjectFinder();
+            List<Path> gradleProjects = finder.find(path);
 
             List<GradleProject> projects = new ArrayList<>();
             for (Path gradleProject : gradleProjects) {
