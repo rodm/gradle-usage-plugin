@@ -97,6 +97,24 @@ class GradleProjectFinderTest {
         assertThat(projects, not(hasItem(projectsPath.resolve('project4'))))
     }
 
+    @Test
+    void 'finds multiple projects in a directory but excludes projects from excluded directory'() {
+        Path projectsPath = startPath.resolve('projects')
+        createGradleProject(projectsPath.resolve('project1'), SETTINGS_GRADLE)
+        createGradleProject(projectsPath.resolve('project2'), SETTINGS_GRADLE_KTS)
+        createGradleProject(projectsPath.resolve('folder/project3'), SETTINGS_GRADLE)
+        createGradleProject(projectsPath.resolve('folder/project4'), SETTINGS_GRADLE)
+
+        def excludes = [projectsPath.resolve('folder')] as Set
+        def projects = finder.find(startPath, excludes)
+
+        assertThat(projects, hasSize(2))
+        assertThat(projects, hasItem(projectsPath.resolve('project1')))
+        assertThat(projects, hasItem(projectsPath.resolve('project2')))
+        assertThat(projects, not(hasItem(projectsPath.resolve('folder/project3'))))
+        assertThat(projects, not(hasItem(projectsPath.resolve('folder/project4'))))
+    }
+
     static void createGradleProject(Path projectDir, String file) {
         createGradleProject(projectDir, projectDir.resolve(file))
     }

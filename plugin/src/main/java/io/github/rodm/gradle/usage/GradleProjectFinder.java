@@ -23,7 +23,9 @@ import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import static java.nio.file.Files.exists;
 
@@ -34,8 +36,12 @@ class GradleProjectFinder {
     static final Path WRAPPER_PROPERTIES_FILE = Paths.get("gradle", "wrapper", "gradle-wrapper.properties");
 
     public List<Path> find(Path startPath) throws IOException {
+        return find(startPath, Collections.emptySet());
+    }
+
+    public List<Path> find(Path startPath, Set<Path> excludes) throws IOException {
         List<Path> paths = new ArrayList<>();
-        DirectoryVisitor visitor = new DirectoryVisitor(paths);
+        DirectoryVisitor visitor = new DirectoryVisitor(paths, excludes);
         Files.walkFileTree(startPath, visitor);
         return paths;
     }
@@ -43,13 +49,18 @@ class GradleProjectFinder {
     static class DirectoryVisitor extends SimpleFileVisitor<Path> {
 
         private final List<Path> paths;
+        private final Set<Path> excludes;
 
-        public DirectoryVisitor(List<Path> paths) {
+        public DirectoryVisitor(List<Path> paths, Set<Path> excludes) {
             this.paths = paths;
+            this.excludes = excludes;
         }
 
         @Override
         public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+            if (excludes.contains(dir)) {
+                return FileVisitResult.SKIP_SUBTREE;
+            }
             if (isGradleProject(dir)) {
                 paths.add(dir);
             }
