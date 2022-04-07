@@ -26,8 +26,11 @@ import java.nio.file.Path
 import static io.github.rodm.gradle.usage.GradleProjectFinder.SETTINGS_GRADLE
 import static io.github.rodm.gradle.usage.GradleProjectFinder.SETTINGS_GRADLE_KTS
 import static io.github.rodm.gradle.usage.GradleProjectFinder.WRAPPER_PROPERTIES_FILE
+import static java.nio.file.Files.createDirectories
 import static org.hamcrest.MatcherAssert.assertThat
+import static org.hamcrest.Matchers.hasItem
 import static org.hamcrest.Matchers.hasSize
+import static org.hamcrest.Matchers.not
 
 class GradleProjectFinderTest {
 
@@ -74,8 +77,33 @@ class GradleProjectFinderTest {
         wrapperFile.parentFile.mkdirs()
         wrapperFile.createNewFile()
 
-
         def projects = finder.find(startPath)
         assertThat(projects, hasSize(1))
+    }
+
+    @Test
+    void 'finds multiple projects in a directory'() {
+        Path projectsPath = startPath.resolve('projects')
+        createGradleProject(projectsPath.resolve('project1'), SETTINGS_GRADLE)
+        createGradleProject(projectsPath.resolve('project2'), SETTINGS_GRADLE_KTS)
+        createGradleProject(projectsPath.resolve('project3'), WRAPPER_PROPERTIES_FILE)
+        createGradleProject(projectsPath.resolve('project4'), 'dummy.txt')
+
+        def projects = finder.find(startPath)
+        assertThat(projects, hasSize(3))
+        assertThat(projects, hasItem(projectsPath.resolve('project1')))
+        assertThat(projects, hasItem(projectsPath.resolve('project2')))
+        assertThat(projects, hasItem(projectsPath.resolve('project3')))
+        assertThat(projects, not(hasItem(projectsPath.resolve('project4'))))
+    }
+
+    static void createGradleProject(Path projectDir, String file) {
+        createGradleProject(projectDir, projectDir.resolve(file))
+    }
+
+    static void createGradleProject(Path projectDir, Path file) {
+        createDirectories(projectDir)
+        createDirectories(projectDir.resolve(file).parent)
+        projectDir.resolve(file) << """"""
     }
 }
