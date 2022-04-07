@@ -16,11 +16,14 @@
 package io.github.rodm.gradle.usage;
 
 import java.io.IOException;
+import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static java.nio.file.Files.exists;
 
@@ -31,15 +34,32 @@ class GradleProjectFinder {
     static final Path WRAPPER_PROPERTIES_FILE = Paths.get("gradle", "wrapper", "gradle-wrapper.properties");
 
     public List<Path> find(Path startPath) throws IOException {
-        return Files.walk(startPath)
-                .filter(p -> p.toFile().isDirectory())
-                .filter(GradleProjectFinder::isGradleProject)
-                .collect(Collectors.toList());
+        List<Path> paths = new ArrayList<>();
+        DirectoryVisitor visitor = new DirectoryVisitor(paths);
+        Files.walkFileTree(startPath, visitor);
+        return paths;
     }
 
-    private static boolean isGradleProject(Path path) {
-        return exists(path.resolve(SETTINGS_GRADLE))
-                || exists(path.resolve(SETTINGS_GRADLE_KTS))
-                || exists(path.resolve(WRAPPER_PROPERTIES_FILE));
+    static class DirectoryVisitor extends SimpleFileVisitor<Path> {
+
+        private final List<Path> paths;
+
+        public DirectoryVisitor(List<Path> paths) {
+            this.paths = paths;
+        }
+
+        @Override
+        public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+            if (isGradleProject(dir)) {
+                paths.add(dir);
+            }
+            return FileVisitResult.CONTINUE;
+        }
+
+        private static boolean isGradleProject(Path path) {
+            return exists(path.resolve(SETTINGS_GRADLE))
+                    || exists(path.resolve(SETTINGS_GRADLE_KTS))
+                    || exists(path.resolve(WRAPPER_PROPERTIES_FILE));
+        }
     }
 }
