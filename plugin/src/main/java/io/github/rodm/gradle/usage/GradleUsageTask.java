@@ -19,7 +19,9 @@ import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
 import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.file.RegularFile;
+import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.Provider;
+import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputDirectory;
 import org.gradle.api.tasks.OutputDirectory;
 import org.gradle.api.tasks.PathSensitive;
@@ -35,9 +37,11 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static io.github.rodm.gradle.usage.GradleProjectFinder.WRAPPER_PROPERTIES_FILE;
@@ -50,12 +54,20 @@ public abstract class GradleUsageTask extends DefaultTask {
     @PathSensitive(PathSensitivity.RELATIVE)
     public abstract DirectoryProperty getSourceDirectory();
 
+    @Input
+    public abstract ListProperty<String> getExcludes();
+
     @OutputDirectory
     public abstract DirectoryProperty getOutputDirectory();
 
     @Option(option = "dir", description = "The directory to scan for Gradle projects.")
     public void setDir(String path) {
         getSourceDirectory().set(getProject().file(path));
+    }
+
+    @Option(option = "exclude-dir", description = "A directory to exclude from the scan for Gradle projects.")
+    public void setExcludeDirs(List<String> paths) {
+        getExcludes().addAll(paths);
     }
 
     @TaskAction
@@ -66,10 +78,13 @@ public abstract class GradleUsageTask extends DefaultTask {
         storeReport(output, getOutputDirectory().file("usage.txt"));
     }
 
-    private static List<GradleProject> scanPath(Path path) {
+    private List<GradleProject> scanPath(Path path) {
         try {
+            Set<Path> excludes = getExcludes().get().stream()
+                    .map(Paths::get)
+                    .collect(Collectors.toSet());
             GradleProjectFinder finder = new GradleProjectFinder();
-            List<Path> gradleProjects = finder.find(path);
+            List<Path> gradleProjects = finder.find(path, excludes);
 
             List<GradleProject> projects = new ArrayList<>();
             for (Path gradleProject : gradleProjects) {
