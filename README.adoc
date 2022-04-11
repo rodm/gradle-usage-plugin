@@ -41,7 +41,10 @@ Refer to the Gradle Plugin Portal for instructions on how to apply the {uri-grad
 
 * `usage` : Scans a directory and subdirectories for Gradle projects and outputs a report listing the Gradle
 projects and the version used by each Gradle project.
-The task takes an argument `--dir` followed by a directory to scan.
+  +
+Options
+** `--dir` : The directory to start the search for Gradle projects.
+** `--exclude-dir` : A directory to exclude from the search. The option can be specified multiple times.
 
 ==== Report
 
@@ -68,6 +71,13 @@ Summary
     6.5 used by 1 projects
   5.5.1 used by 1 projects
 ----
+
+Run the command providing a directory to search but excluding a subdirectory.
+
+    ./gradlew usage --dir ~/Projects --exclude-dir ~/Projects/asciidoctor-gradle-plugin
+
+The report output will be as shown above but without the `asciidocker-gradle-plugin` project and
+the version of Gradle it uses.
 
 == License
 
