@@ -20,6 +20,7 @@ import org.gradle.api.GradleException;
 import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.file.RegularFile;
 import org.gradle.api.provider.ListProperty;
+import org.gradle.api.provider.Property;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputDirectory;
@@ -57,6 +58,9 @@ public abstract class GradleUsageTask extends DefaultTask {
     @Input
     public abstract ListProperty<String> getExcludes();
 
+    @Input
+    public abstract Property<Boolean> getFollowLinks();
+
     @OutputDirectory
     public abstract DirectoryProperty getOutputDirectory();
 
@@ -68,6 +72,11 @@ public abstract class GradleUsageTask extends DefaultTask {
     @Option(option = "exclude-dir", description = "A directory to exclude from the scan for Gradle projects.")
     public void setExcludeDirs(List<String> paths) {
         getExcludes().addAll(paths);
+    }
+
+    @Option(option = "follow-links", description = "Follow links.")
+    public void setFollowLinksOption(boolean followLinks) {
+        getFollowLinks().set(followLinks);
     }
 
     @TaskAction
@@ -84,7 +93,7 @@ public abstract class GradleUsageTask extends DefaultTask {
                     .map(Paths::get)
                     .collect(Collectors.toSet());
             GradleProjectFinder finder = new GradleProjectFinder();
-            List<Path> gradleProjects = finder.find(path, excludes);
+            List<Path> gradleProjects = finder.find(path, excludes, getFollowLinks().get());
 
             List<GradleProject> projects = new ArrayList<>();
             for (Path gradleProject : gradleProjects) {

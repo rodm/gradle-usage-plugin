@@ -29,6 +29,7 @@ public class GradleUsagePlugin implements Plugin<Project> {
                 .register(TASK_NAME, GradleUsageTask.class, task -> {
                     task.setGroup(TASK_GROUP);
                     task.setDescription(TASK_DESCRIPTION);
+                    task.getFollowLinks().convention(false);
                     task.getOutputDirectory().convention(
                             project.getLayout().getBuildDirectory().dir("reports/usage")
                     );
