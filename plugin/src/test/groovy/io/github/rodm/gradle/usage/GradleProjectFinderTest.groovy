@@ -21,7 +21,9 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
 
+import java.nio.file.Files
 import java.nio.file.Path
+import java.nio.file.Paths
 
 import static io.github.rodm.gradle.usage.GradleProjectFinder.SETTINGS_GRADLE
 import static io.github.rodm.gradle.usage.GradleProjectFinder.SETTINGS_GRADLE_KTS
@@ -113,6 +115,38 @@ class GradleProjectFinderTest {
         assertThat(projects, hasItem(projectsPath.resolve('project2')))
         assertThat(projects, not(hasItem(projectsPath.resolve('folder/project3'))))
         assertThat(projects, not(hasItem(projectsPath.resolve('folder/project4'))))
+    }
+
+    @Test
+    void 'finds multiple projects in a directory and follows links'() {
+        Path projectsPath = startPath.resolve('projects')
+        createGradleProject(projectsPath.resolve('project1'), SETTINGS_GRADLE)
+        createGradleProject(projectsPath.resolve('project2'), SETTINGS_GRADLE)
+        Path project3 = startPath.resolve('folder/project3')
+        createGradleProject(project3, SETTINGS_GRADLE)
+        Files.createSymbolicLink(projectsPath.resolve('project3-link'), project3)
+
+        def projects = finder.find(startPath.resolve('projects'), true)
+
+        assertThat(projects, hasItem(projectsPath.resolve('project1')))
+        assertThat(projects, hasItem(projectsPath.resolve('project2')))
+        assertThat(projects, hasItem(projectsPath.resolve('project3-link')))
+    }
+
+    @Test
+    void 'finds multiple projects in a directory and does not follows links by default'() {
+        Path projectsPath = startPath.resolve('projects')
+        createGradleProject(projectsPath.resolve('project1'), SETTINGS_GRADLE)
+        createGradleProject(projectsPath.resolve('project2'), SETTINGS_GRADLE)
+        Path project3 = startPath.resolve('folder/project3')
+        createGradleProject(project3, SETTINGS_GRADLE)
+        Files.createSymbolicLink(projectsPath.resolve('project3-link'), project3)
+
+        def projects = finder.find(startPath.resolve('projects'), false)
+
+        assertThat(projects, hasItem(projectsPath.resolve('project1')))
+        assertThat(projects, hasItem(projectsPath.resolve('project2')))
+        assertThat(projects, not(hasItem(projectsPath.resolve('project3-link'))))
     }
 
     static void createGradleProject(Path projectDir, String file) {

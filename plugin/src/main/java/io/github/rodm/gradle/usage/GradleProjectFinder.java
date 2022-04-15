@@ -16,6 +16,7 @@
 package io.github.rodm.gradle.usage;
 
 import java.io.IOException;
+import java.nio.file.FileVisitOption;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -23,11 +24,13 @@ import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
+import static java.nio.file.FileVisitOption.FOLLOW_LINKS;
 import static java.nio.file.Files.exists;
+import static java.util.Collections.emptySet;
 
 class GradleProjectFinder {
 
@@ -36,13 +39,22 @@ class GradleProjectFinder {
     static final Path WRAPPER_PROPERTIES_FILE = Paths.get("gradle", "wrapper", "gradle-wrapper.properties");
 
     public List<Path> find(Path startPath) throws IOException {
-        return find(startPath, Collections.emptySet());
+        return find(startPath, emptySet(), false);
+    }
+
+    public List<Path> find(Path startPath, boolean followLinks) throws IOException {
+        return find(startPath, emptySet(), followLinks);
     }
 
     public List<Path> find(Path startPath, Set<Path> excludes) throws IOException {
+        return find(startPath, excludes, false);
+    }
+
+    public List<Path> find(Path startPath, Set<Path> excludes, boolean followLinks) throws IOException {
         List<Path> paths = new ArrayList<>();
+        Set<FileVisitOption> options = (followLinks) ? EnumSet.of(FOLLOW_LINKS) : emptySet();
         DirectoryVisitor visitor = new DirectoryVisitor(paths, excludes);
-        Files.walkFileTree(startPath, visitor);
+        Files.walkFileTree(startPath, options, Integer.MAX_VALUE, visitor);
         return paths;
     }
 
