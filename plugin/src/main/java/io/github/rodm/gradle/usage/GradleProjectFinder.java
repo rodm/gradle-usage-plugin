@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static java.nio.file.FileVisitOption.FOLLOW_LINKS;
 import static java.nio.file.Files.exists;
@@ -41,9 +42,13 @@ class GradleProjectFinder {
     public List<Path> find(Path startPath, Set<Path> excludes, boolean followLinks) throws IOException {
         List<Path> paths = new ArrayList<>();
         Set<FileVisitOption> options = (followLinks) ? EnumSet.of(FOLLOW_LINKS) : emptySet();
-        DirectoryVisitor visitor = new DirectoryVisitor(paths, excludes);
+        DirectoryVisitor visitor = new DirectoryVisitor(paths, normalizePaths(excludes));
         Files.walkFileTree(startPath, options, Integer.MAX_VALUE, visitor);
         return paths;
+    }
+
+    private Set<Path> normalizePaths(Set<Path> paths) {
+        return paths.stream().map(Path::normalize).collect(Collectors.toSet());
     }
 
     static class DirectoryVisitor extends SimpleFileVisitor<Path> {

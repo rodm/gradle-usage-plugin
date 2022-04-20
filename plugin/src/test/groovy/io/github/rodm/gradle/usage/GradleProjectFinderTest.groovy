@@ -125,6 +125,19 @@ class GradleProjectFinderTest {
     }
 
     @Test
+    void 'finds project in a directory but excludes project from a normalized exclude directory'() {
+        Path projectsPath = startPath.resolve('projects')
+        createGradleProject(projectsPath.resolve('project1'), SETTINGS_GRADLE)
+        createGradleProject(projectsPath.resolve('folder/project2'), SETTINGS_GRADLE)
+
+        def excludes = [projectsPath.resolve('../projects/folder')] as Set
+        def projects = find(startPath, excludes)
+
+        assertThat(projects, hasSize(1))
+        assertThat(projects, hasItem(projectsPath.resolve('project1')))
+    }
+
+    @Test
     void 'finds multiple projects in a directory and follows links'() {
         Path projectsPath = startPath.resolve('projects')
         createGradleProject(projectsPath.resolve('project1'), SETTINGS_GRADLE)
