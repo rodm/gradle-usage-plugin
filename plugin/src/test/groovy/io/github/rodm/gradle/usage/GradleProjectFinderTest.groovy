@@ -23,7 +23,6 @@ import org.junit.jupiter.api.io.TempDir
 
 import java.nio.file.Files
 import java.nio.file.Path
-import java.nio.file.Paths
 
 import static io.github.rodm.gradle.usage.GradleProjectFinder.SETTINGS_GRADLE
 import static io.github.rodm.gradle.usage.GradleProjectFinder.SETTINGS_GRADLE_KTS
@@ -42,6 +41,14 @@ class GradleProjectFinderTest {
     @TempDir
     private Path startPath
 
+    private List<Path> find(Path startPath, boolean followLinks) {
+        return find(startPath, [] as Set, followLinks)
+    }
+
+    private List<Path> find(Path startPath, Set<Path> excludes = [], boolean followLinks = false) {
+        return finder.find(startPath, excludes, followLinks)
+    }
+
     @BeforeEach
     void init() {
         project = ProjectBuilder.builder().build()
@@ -51,7 +58,7 @@ class GradleProjectFinderTest {
 
     @Test
     void 'returns zero projects'() {
-        def projects = finder.find(startPath)
+        def projects = find(startPath)
         assertThat(projects, hasSize(0))
     }
 
@@ -60,7 +67,7 @@ class GradleProjectFinderTest {
         File settingsFile = startPath.resolve(SETTINGS_GRADLE).toFile()
         settingsFile.createNewFile()
 
-        def projects = finder.find(startPath)
+        def projects = find(startPath)
         assertThat(projects, hasSize(1))
     }
 
@@ -69,7 +76,7 @@ class GradleProjectFinderTest {
         File settingsFile = startPath.resolve(SETTINGS_GRADLE_KTS).toFile()
         settingsFile.createNewFile()
 
-        def projects = finder.find(startPath)
+        def projects = find(startPath)
         assertThat(projects, hasSize(1))
     }
 
@@ -79,7 +86,7 @@ class GradleProjectFinderTest {
         wrapperFile.parentFile.mkdirs()
         wrapperFile.createNewFile()
 
-        def projects = finder.find(startPath)
+        def projects = find(startPath)
         assertThat(projects, hasSize(1))
     }
 
@@ -91,7 +98,7 @@ class GradleProjectFinderTest {
         createGradleProject(projectsPath.resolve('project3'), WRAPPER_PROPERTIES_FILE)
         createGradleProject(projectsPath.resolve('project4'), 'dummy.txt')
 
-        def projects = finder.find(startPath)
+        def projects = find(startPath)
         assertThat(projects, hasSize(3))
         assertThat(projects, hasItem(projectsPath.resolve('project1')))
         assertThat(projects, hasItem(projectsPath.resolve('project2')))
@@ -108,7 +115,7 @@ class GradleProjectFinderTest {
         createGradleProject(projectsPath.resolve('folder/project4'), SETTINGS_GRADLE)
 
         def excludes = [projectsPath.resolve('folder')] as Set
-        def projects = finder.find(startPath, excludes)
+        def projects = find(startPath, excludes)
 
         assertThat(projects, hasSize(2))
         assertThat(projects, hasItem(projectsPath.resolve('project1')))
@@ -126,7 +133,7 @@ class GradleProjectFinderTest {
         createGradleProject(project3, SETTINGS_GRADLE)
         Files.createSymbolicLink(projectsPath.resolve('project3-link'), project3)
 
-        def projects = finder.find(startPath.resolve('projects'), true)
+        def projects = find(startPath.resolve('projects'), true)
 
         assertThat(projects, hasItem(projectsPath.resolve('project1')))
         assertThat(projects, hasItem(projectsPath.resolve('project2')))
@@ -142,7 +149,7 @@ class GradleProjectFinderTest {
         createGradleProject(project3, SETTINGS_GRADLE)
         Files.createSymbolicLink(projectsPath.resolve('project3-link'), project3)
 
-        def projects = finder.find(startPath.resolve('projects'), false)
+        def projects = find(startPath.resolve('projects'), false)
 
         assertThat(projects, hasItem(projectsPath.resolve('project1')))
         assertThat(projects, hasItem(projectsPath.resolve('project2')))

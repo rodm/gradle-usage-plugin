@@ -38,18 +38,6 @@ class GradleProjectFinder {
     static final String SETTINGS_GRADLE_KTS = "settings.gradle.kts";
     static final Path WRAPPER_PROPERTIES_FILE = Paths.get("gradle", "wrapper", "gradle-wrapper.properties");
 
-    public List<Path> find(Path startPath) throws IOException {
-        return find(startPath, emptySet(), false);
-    }
-
-    public List<Path> find(Path startPath, boolean followLinks) throws IOException {
-        return find(startPath, emptySet(), followLinks);
-    }
-
-    public List<Path> find(Path startPath, Set<Path> excludes) throws IOException {
-        return find(startPath, excludes, false);
-    }
-
     public List<Path> find(Path startPath, Set<Path> excludes, boolean followLinks) throws IOException {
         List<Path> paths = new ArrayList<>();
         Set<FileVisitOption> options = (followLinks) ? EnumSet.of(FOLLOW_LINKS) : emptySet();
