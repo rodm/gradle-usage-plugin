@@ -15,6 +15,7 @@
  */
 package io.github.rodm.gradle.usage
 
+import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.GradleRunner
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -24,6 +25,7 @@ import java.nio.file.Path
 import java.nio.file.Files
 
 import static java.nio.file.Files.createDirectories
+import static org.hamcrest.CoreMatchers.containsString
 import static org.hamcrest.MatcherAssert.assertThat
 import static org.hamcrest.Matchers.hasItem
 import static org.hamcrest.Matchers.matchesPattern
@@ -52,7 +54,7 @@ class GradleUsageFunctionalTest {
         createGradleProject(projects.resolve('project2'), '6.9.2')
         createGradleProject(projects.resolve('project3'), '7.4')
 
-        runBuild(projects)
+        executeBuild(projects)
 
         File reportFile = dir.resolve(REPORT_PATH).toFile()
         assertThat(reportFile, anExistingFile())
@@ -71,7 +73,7 @@ class GradleUsageFunctionalTest {
         createGradleProject(projects.resolve('project2'), '6.9.2', 'settings.gradle.kts')
         createGradleProject(projects.resolve('project3'), '7.4', 'settings.gradle.kts')
 
-        runBuild(projects)
+        executeBuild(projects)
 
         List<String> lines = readReportLines()
         assertThat(lines, hasItem('Found 3 Gradle projects'))
@@ -86,7 +88,7 @@ class GradleUsageFunctionalTest {
         createGradleProjectWithoutWrapper(projects.resolve('project1'))
         createGradleProjectWithoutWrapper(projects.resolve('project2'))
 
-        runBuild(projects)
+        executeBuild(projects)
 
         List<String> lines = readReportLines()
         assertThat(lines, hasItem('Found 2 Gradle projects'))
@@ -100,7 +102,7 @@ class GradleUsageFunctionalTest {
         createGradleProject(projects.resolve('project1'), '5.6.4', 'no-settings.txt')
         createGradleProject(projects.resolve('project2'), '6.9.2', 'no-settings.txt')
 
-        runBuild(projects)
+        executeBuild(projects)
 
         List<String> lines = readReportLines()
         assertThat(lines, hasItem('Found 2 Gradle projects'))
@@ -108,11 +110,18 @@ class GradleUsageFunctionalTest {
         assertThat(lines, hasItem(matchesPattern(' +6.9.2 .*/project2')))
     }
 
-    private void runBuild(Path projects) {
+    @Test
+    void 'check usage task can be loaded from the configuration cache'() throws IOException {
+        executeBuild(dir, '--configuration-cache')
+        def result = executeBuild(dir, '--configuration-cache')
+        assertThat(result.output, containsString('Reusing configuration cache.'))
+    }
+
+    private BuildResult executeBuild(Path projects, String... args) {
         GradleRunner runner = GradleRunner.create()
                 .forwardOutput()
                 .withPluginClasspath()
-                .withArguments('usage', '--dir', projects.toString())
+                .withArguments('usage', '--dir', projects.toString(), *args)
                 .withProjectDir(dir.toFile())
         runner.build()
     }
