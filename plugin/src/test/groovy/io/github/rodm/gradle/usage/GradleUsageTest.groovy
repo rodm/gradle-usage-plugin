@@ -21,6 +21,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 import static org.hamcrest.MatcherAssert.assertThat
+import static org.hamcrest.Matchers.empty
 import static org.hamcrest.Matchers.endsWith
 import static org.hamcrest.Matchers.is
 import static org.hamcrest.Matchers.notNullValue
@@ -41,9 +42,21 @@ class GradleUsageTest {
     }
 
     @Test
-    void 'usage task has no default source directory'() {
+    void 'usage task has no default search paths'() {
         GradleUsageTask task = project.tasks.findByName('usage') as GradleUsageTask
-        assertThat(task.sourceDirectory.present, is(false))
+        assertThat(task.paths.get(), is(empty()))
+    }
+
+    @Test
+    void 'usage task has no default exclude paths'() {
+        GradleUsageTask task = project.tasks.findByName('usage') as GradleUsageTask
+        assertThat(task.excludes.get(), is(empty()))
+    }
+
+    @Test
+    void 'usage task default is to not follow links'() {
+        GradleUsageTask task = project.tasks.findByName('usage') as GradleUsageTask
+        assertThat(task.followLinks.get(), is(false))
     }
 
     @Test

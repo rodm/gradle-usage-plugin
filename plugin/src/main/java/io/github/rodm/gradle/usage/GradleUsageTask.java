@@ -23,10 +23,7 @@ import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.Property;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.Input;
-import org.gradle.api.tasks.InputDirectory;
 import org.gradle.api.tasks.OutputDirectory;
-import org.gradle.api.tasks.PathSensitive;
-import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.api.tasks.options.Option;
 import org.gradle.tooling.GradleConnectionException;
@@ -51,9 +48,8 @@ import static java.nio.file.Files.exists;
 
 public abstract class GradleUsageTask extends DefaultTask {
 
-    @InputDirectory
-    @PathSensitive(PathSensitivity.RELATIVE)
-    public abstract DirectoryProperty getSourceDirectory();
+    @Input
+    public abstract ListProperty<String> getPaths();
 
     @Input
     public abstract ListProperty<String> getExcludes();
@@ -65,8 +61,8 @@ public abstract class GradleUsageTask extends DefaultTask {
     public abstract DirectoryProperty getOutputDirectory();
 
     @Option(option = "dir", description = "The directory to scan for Gradle projects.")
-    public void setDir(String path) {
-        getSourceDirectory().set(getProject().file(path));
+    public void setDir(List<String> paths) {
+        getPaths().addAll(paths);
     }
 
     @Option(option = "exclude-dir", description = "A directory to exclude from the scan for Gradle projects.")
@@ -81,19 +77,17 @@ public abstract class GradleUsageTask extends DefaultTask {
 
     @TaskAction
     public void reportGradleUsage() {
-        Path path = getSourceDirectory().getAsFile().get().toPath();
-        List<GradleProject> projects = scanPath(path);
+        List<GradleProject> projects = scanPaths();
         List<String> output = produceReport(projects);
         storeReport(output, getOutputDirectory().file("usage.txt"));
     }
 
-    private List<GradleProject> scanPath(Path path) {
+    private List<GradleProject> scanPaths() {
         try {
-            Set<Path> excludes = getExcludes().get().stream()
-                    .map(Paths::get)
-                    .collect(Collectors.toSet());
+            Set<Path> paths = asPathSet(getPaths().get());
+            Set<Path> excludes = asPathSet(getExcludes().get());
             GradleProjectFinder finder = new GradleProjectFinder();
-            List<Path> gradleProjects = finder.find(path, excludes, getFollowLinks().get());
+            List<Path> gradleProjects = finder.find(paths, excludes, getFollowLinks().get());
 
             List<GradleProject> projects = new ArrayList<>();
             for (Path gradleProject : gradleProjects) {
@@ -105,6 +99,10 @@ public abstract class GradleUsageTask extends DefaultTask {
         catch (IOException e) {
             throw new GradleException("Error scanning path", e);
         }
+    }
+
+    private Set<Path> asPathSet(List<String> list) {
+        return list.stream().map(Paths::get).collect(Collectors.toSet());
     }
 
     private static String projectVersion(Path path) {
