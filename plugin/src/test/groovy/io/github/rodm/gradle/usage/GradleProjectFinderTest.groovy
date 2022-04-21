@@ -46,7 +46,11 @@ class GradleProjectFinderTest {
     }
 
     private List<Path> find(Path startPath, Set<Path> excludes = [], boolean followLinks = false) {
-        return finder.find(startPath, excludes, followLinks)
+        return find([startPath] as Set, excludes, followLinks)
+    }
+
+    private List<Path> find(Set<Path> paths, Set<Path> excludes = [], boolean followLinks = false) {
+        return finder.find(paths, excludes, followLinks)
     }
 
     @BeforeEach
@@ -104,6 +108,19 @@ class GradleProjectFinderTest {
         assertThat(projects, hasItem(projectsPath.resolve('project2')))
         assertThat(projects, hasItem(projectsPath.resolve('project3')))
         assertThat(projects, not(hasItem(projectsPath.resolve('project4'))))
+    }
+
+    @Test
+    void 'finds multiple projects in multiple directories'() {
+        Path path1 = startPath.resolve('dir1')
+        createGradleProject(path1.resolve('project1'), SETTINGS_GRADLE)
+        Path path2 = startPath.resolve('dir2')
+        createGradleProject(path2.resolve('project2'), SETTINGS_GRADLE_KTS)
+
+        def projects = find([path1, path2] as Set)
+        assertThat(projects, hasSize(2))
+        assertThat(projects, hasItem(path1.resolve('project1')))
+        assertThat(projects, hasItem(path2.resolve('project2')))
     }
 
     @Test

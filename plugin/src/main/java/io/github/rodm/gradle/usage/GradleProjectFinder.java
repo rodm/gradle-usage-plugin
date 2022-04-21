@@ -24,6 +24,7 @@ import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
@@ -40,10 +41,16 @@ class GradleProjectFinder {
     static final Path WRAPPER_PROPERTIES_FILE = Paths.get("gradle", "wrapper", "gradle-wrapper.properties");
 
     public List<Path> find(Path startPath, Set<Path> excludes, boolean followLinks) throws IOException {
+        return find(Collections.singleton(startPath), excludes, followLinks);
+    }
+
+    public List<Path> find(Set<Path> searchPaths, Set<Path> excludes, boolean followLinks) throws IOException {
         List<Path> paths = new ArrayList<>();
         Set<FileVisitOption> options = (followLinks) ? EnumSet.of(FOLLOW_LINKS) : emptySet();
         DirectoryVisitor visitor = new DirectoryVisitor(paths, normalizePaths(excludes));
-        Files.walkFileTree(startPath, options, Integer.MAX_VALUE, visitor);
+        for (Path path : searchPaths) {
+            Files.walkFileTree(path, options, Integer.MAX_VALUE, visitor);
+        }
         return paths;
     }
 
