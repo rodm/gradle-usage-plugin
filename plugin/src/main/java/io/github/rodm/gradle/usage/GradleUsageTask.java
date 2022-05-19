@@ -86,6 +86,7 @@ public abstract class GradleUsageTask extends DefaultTask {
         try {
             Set<Path> paths = asPathSet(getPaths().get());
             Set<Path> excludes = asPathSet(getExcludes().get());
+            validate(excludes);
             GradleProjectFinder finder = new GradleProjectFinder();
             List<Path> gradleProjects = finder.find(paths, excludes, getFollowLinks().get());
 
@@ -103,6 +104,12 @@ public abstract class GradleUsageTask extends DefaultTask {
 
     private Set<Path> asPathSet(List<String> list) {
         return list.stream().map(Paths::get).collect(Collectors.toSet());
+    }
+
+    private void validate(Set<Path> paths) {
+        paths.stream()
+                .filter(Files::notExists)
+                .forEach(path -> getLogger().warn("Invalid exclude path: {}", path));
     }
 
     private static String projectVersion(Path path) {
