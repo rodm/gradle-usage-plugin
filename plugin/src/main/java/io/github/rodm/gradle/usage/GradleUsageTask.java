@@ -60,7 +60,7 @@ public abstract class GradleUsageTask extends DefaultTask {
     @OutputDirectory
     public abstract DirectoryProperty getOutputDirectory();
 
-    @Option(option = "dir", description = "The directory to scan for Gradle projects.")
+    @Option(option = "dir", description = "A directory to scan for Gradle projects.")
     public void setDir(List<String> paths) {
         getPaths().addAll(paths);
     }
@@ -70,7 +70,7 @@ public abstract class GradleUsageTask extends DefaultTask {
         getExcludes().addAll(paths);
     }
 
-    @Option(option = "follow-links", description = "Follow links.")
+    @Option(option = "follow-links", description = "Configure the scanner to follow symbolic links.")
     public void setFollowLinksOption(boolean followLinks) {
         getFollowLinks().set(followLinks);
     }
