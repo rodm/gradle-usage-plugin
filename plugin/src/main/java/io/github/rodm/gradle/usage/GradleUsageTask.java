@@ -124,7 +124,7 @@ public abstract class GradleUsageTask extends DefaultTask {
             return environment.getGradle().getGradleVersion();
         }
         catch (GradleConnectionException e) {
-            return "UNKNOWN";
+            return "FAILED";
         }
     }
 

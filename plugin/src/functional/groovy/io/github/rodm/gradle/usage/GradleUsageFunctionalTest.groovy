@@ -97,6 +97,27 @@ class GradleUsageFunctionalTest {
     }
 
     @Test
+    void 'usage task finds Gradle project and reports failed for an unavailable distribution'() throws IOException {
+        Path projects = dir.resolve('projects')
+        createGradleProject(projects.resolve('project1'), '6.9.2', 'settings.gradle.kts')
+        createGradleProject(projects.resolve('project2'), '7.4.2', 'settings.gradle.kts')
+
+        // set URL to a distribution that is unavailable via http
+        Path wrapperPath = projects.resolve('project2/gradle/wrapper/gradle-wrapper.properties')
+        Properties properties = new Properties()
+        properties.load(Files.newBufferedReader(wrapperPath))
+        properties.put('distributionUrl', 'http://services.gradle.org/distributions/gradle-1.0-bin.zip')
+        properties.store(Files.newOutputStream(wrapperPath), null)
+
+        executeBuild(projects)
+
+        List<String> lines = readReportLines()
+        assertThat(lines, hasItem('Found 2 Gradle projects'))
+        assertThat(lines, hasItem(matchesPattern(' +6.9.2 .*/project1')))
+        assertThat(lines, hasItem(matchesPattern(' +FAILED .*/project2')))
+    }
+
+    @Test
     void 'usage task finds Gradle projects using wrapper and without settings'() throws IOException {
         Path projects = dir.resolve('projects')
         createGradleProject(projects.resolve('project1'), '5.6.4', 'no-settings.txt')
