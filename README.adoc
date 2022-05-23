@@ -43,8 +43,11 @@ Refer to the Gradle Plugin Portal for instructions on how to apply the {uri-grad
 projects and the version used by each Gradle project.
   +
 Options
-** `--dir` : The directory to start the search for Gradle projects.
+** `--dir` : A directory to search for Gradle projects. The option can be specified multiple times.
 ** `--exclude-dir` : A directory to exclude from the search. The option can be specified multiple times.
+** `--follow-links` : Configure the search to follow symbolic links.
+** `--use-wrapper-version` : Use the version from the Gradle Wrapper properties file. The default is to
+use the version returned by the Gradle Connector.
 
 ==== Report
 
@@ -78,6 +81,11 @@ Run the command providing a directory to search but excluding a subdirectory.
 
 The report output will be as shown above but without the `asciidocker-gradle-plugin` project and
 the version of Gradle it uses.
+
+The report may also return projects with a version of `UNKNOWN` or `FAILED`. The value `UNKNOWN` will
+be returned when a Gradle project doesn't contain a `gradle-wrapper.properties` file. The value
+`FAILED` will be returned if the Gradle Connector throws an exception or if the version cannot be
+parsed from the `gradle-wrapper.properties` file.
 
 == License
 
