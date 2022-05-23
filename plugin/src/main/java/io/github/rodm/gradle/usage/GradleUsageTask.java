@@ -33,12 +33,14 @@ import org.gradle.tooling.model.build.BuildEnvironment;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -57,6 +59,9 @@ public abstract class GradleUsageTask extends DefaultTask {
     @Input
     public abstract Property<Boolean> getFollowLinks();
 
+    @Input
+    public abstract Property<Boolean> getUseWrapperVersion();
+
     @OutputDirectory
     public abstract DirectoryProperty getOutputDirectory();
 
@@ -73,6 +78,11 @@ public abstract class GradleUsageTask extends DefaultTask {
     @Option(option = "follow-links", description = "Configure the scanner to follow symbolic links.")
     public void setFollowLinksOption(boolean followLinks) {
         getFollowLinks().set(followLinks);
+    }
+
+    @Option(option = "use-wrapper-version", description = "Use the version from the Gradle Wrapper properties file.")
+    public void setUseWrapperVersionOption(boolean useWrapperVersion) {
+        getUseWrapperVersion().set(useWrapperVersion);
     }
 
     @TaskAction
@@ -112,7 +122,33 @@ public abstract class GradleUsageTask extends DefaultTask {
                 .forEach(path -> getLogger().warn("Invalid exclude path: {}", path));
     }
 
-    private static String projectVersion(Path path) {
+    private String projectVersion(Path path) {
+        if (getUseWrapperVersion().get()) {
+            return projectVersionFromGradleWrapper(path);
+        } else {
+            return projectVersionFromGradleConnector(path);
+        }
+    }
+
+    private static String projectVersionFromGradleWrapper(Path path) {
+        if (!exists(path.resolve(WRAPPER_PROPERTIES_FILE))) {
+            return "UNKNOWN";
+        }
+        Properties props = new Properties();
+        try (Reader reader = Files.newBufferedReader(path.resolve(WRAPPER_PROPERTIES_FILE))) {
+            props.load(reader);
+            String url = props.getProperty("distributionUrl");
+            String name = url.substring(url.lastIndexOf('/') + 1);
+            return name.replace("gradle-", "")
+                    .replace("-bin.zip", "")
+                    .replace("-all.zip", "");
+        }
+        catch (IOException e) {
+            return "FAILED";
+        }
+    }
+
+    private static String projectVersionFromGradleConnector(Path path) {
         if (!exists(path.resolve(WRAPPER_PROPERTIES_FILE))) {
             return "UNKNOWN";
         }
@@ -153,7 +189,7 @@ public abstract class GradleUsageTask extends DefaultTask {
     }
 
     private static int maxVersionLength(List<GradleProject> projects) {
-        return projects.stream().mapToInt((project) -> project.version().length()).max().orElse(0);
+        return projects.stream().mapToInt(project -> project.version().length()).max().orElse(0);
     }
 
     private static void storeReport(List<String> projects, Provider<RegularFile> outputFile) {

@@ -30,6 +30,7 @@ public class GradleUsagePlugin implements Plugin<Project> {
                     task.setGroup(TASK_GROUP);
                     task.setDescription(TASK_DESCRIPTION);
                     task.getFollowLinks().convention(false);
+                    task.getUseWrapperVersion().convention(false);
                     task.getOutputDirectory().convention(
                             project.getLayout().getBuildDirectory().dir("reports/usage")
                     );

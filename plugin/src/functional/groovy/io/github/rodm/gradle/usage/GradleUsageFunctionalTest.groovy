@@ -138,6 +138,25 @@ class GradleUsageFunctionalTest {
         assertThat(result.output, containsString('Reusing configuration cache.'))
     }
 
+    @Test
+    void 'usage task finds Gradle projects using only wrapper properties'() throws IOException {
+        Path projects = dir.resolve('projects')
+        createGradleProject(projects.resolve('project1'), '5.6.4')
+        createGradleProject(projects.resolve('project2'), '6.9.2', 'settings.gradle.kts')
+        createGradleProject(projects.resolve('project3'), '7.4')
+
+        executeBuild(dir, '--use-wrapper-version')
+
+        File reportFile = dir.resolve(REPORT_PATH).toFile()
+        assertThat(reportFile, anExistingFile())
+
+        List<String> lines = Files.readAllLines(reportFile.toPath())
+        assertThat(lines, hasItem('Found 3 Gradle projects'))
+        assertThat(lines, hasItem(matchesPattern(' +5.6.4 .*/project1')))
+        assertThat(lines, hasItem(matchesPattern(' +6.9.2 .*/project2')))
+        assertThat(lines, hasItem(matchesPattern(' +7.4 .*/project3')))
+    }
+
     private BuildResult executeBuild(Path projects, String... args) {
         GradleRunner runner = GradleRunner.create()
                 .forwardOutput()
