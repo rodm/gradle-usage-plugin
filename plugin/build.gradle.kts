@@ -4,8 +4,8 @@ plugins {
     id ("groovy")
     id ("jacoco")
     id ("maven-publish")
-    id ("com.gradle.plugin-publish") version "0.20.0"
-    id ("org.sonarqube") version "3.3"
+    id ("com.gradle.plugin-publish") version "1.0.0"
+    id ("org.sonarqube") version "3.4.0.2513"
 }
 
 version = "0.4-SNAPSHOT"
