@@ -17,23 +17,29 @@ package io.github.rodm.gradle.usage;
 
 import org.gradle.api.Project;
 import org.gradle.api.Plugin;
+import org.gradle.api.tasks.TaskContainer;
 
 public class GradleUsagePlugin implements Plugin<Project> {
 
+    private static final String EXTENSION_NAME = "usage";
     private static final String TASK_NAME = "usage";
     private static final String TASK_GROUP = "reports";
     private static final String TASK_DESCRIPTION = "Scans a directory and produces a report of all Gradle projects and the version used.";
 
     public void apply(Project project) {
-        project.getTasks()
-                .register(TASK_NAME, GradleUsageTask.class, task -> {
-                    task.setGroup(TASK_GROUP);
-                    task.setDescription(TASK_DESCRIPTION);
-                    task.getFollowLinks().convention(false);
-                    task.getUseWrapperVersion().convention(false);
-                    task.getOutputDirectory().convention(
-                            project.getLayout().getBuildDirectory().dir("reports/usage")
-                    );
-                });
+        GradleUsageExtension extension = project.getExtensions().create(EXTENSION_NAME, GradleUsageExtension.class);
+
+        TaskContainer tasks = project.getTasks();
+        tasks.register(TASK_NAME, GradleUsageTask.class, task -> {
+            task.setGroup(TASK_GROUP);
+            task.setDescription(TASK_DESCRIPTION);
+            task.getPaths().set(extension.getPathsProperty());
+            task.getExcludes().set(extension.getExcludesProperty());
+            task.getFollowLinks().set(extension.getFollowLinksProperty());
+            task.getUseWrapperVersion().set(extension.getUseWrapperVersionProperty());
+            task.getOutputDirectory().convention(
+                    project.getLayout().getBuildDirectory().dir("reports/usage")
+            );
+        });
     }
 }

@@ -21,8 +21,11 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 import static org.hamcrest.MatcherAssert.assertThat
+import static org.hamcrest.Matchers.containsInAnyOrder
 import static org.hamcrest.Matchers.empty
 import static org.hamcrest.Matchers.endsWith
+import static org.hamcrest.Matchers.hasItem
+import static org.hamcrest.Matchers.instanceOf
 import static org.hamcrest.Matchers.is
 import static org.hamcrest.Matchers.notNullValue
 
@@ -60,8 +63,83 @@ class GradleUsageTest {
     }
 
     @Test
+    void 'usage task default is to not use the Gradle wrapper version'() {
+        GradleUsageTask task = project.tasks.findByName('usage') as GradleUsageTask
+        assertThat(task.useWrapperVersion.get(), is(false))
+    }
+
+    @Test
     void 'usage task has a default output directory for its report'() {
-        GradleUsageTask task = this.project.tasks.findByName('usage') as GradleUsageTask
+        GradleUsageTask task = project.tasks.findByName('usage') as GradleUsageTask
         assertThat(task.outputDirectory.get().asFile.toString(), endsWith('build/reports/usage'))
+    }
+
+    @Test
+    void 'applying plugin creates usage extension'() {
+        def extension = project.extensions.getByName('usage')
+        assertThat(extension, is(notNullValue()))
+        assertThat(extension, instanceOf(GradleUsageExtension))
+    }
+
+    @Test
+    void 'configures usage task with path'() {
+        project.usage {
+            path 'path1'
+        }
+
+        def task = project.tasks.getByName('usage') as GradleUsageTask
+        assertThat(task.paths.get(), hasItem('path1'))
+    }
+
+    @Test
+    void 'configures usage task with multiple paths'() {
+        project.usage {
+            path 'path1'
+            path 'path2'
+        }
+
+        def task = project.tasks.getByName('usage') as GradleUsageTask
+        assertThat(task.paths.get(), containsInAnyOrder('path1', 'path2'))
+    }
+
+    @Test
+    void 'configures usage task with excluded path'() {
+        project.usage {
+            exclude 'path1'
+        }
+
+        def task = project.tasks.getByName('usage') as GradleUsageTask
+        assertThat(task.excludes.get(), hasItem('path1'))
+    }
+
+    @Test
+    void 'configures usage task with multiple excluded paths'() {
+        project.usage {
+            exclude 'path1'
+            exclude 'path2'
+        }
+
+        def task = project.tasks.getByName('usage') as GradleUsageTask
+        assertThat(task.excludes.get(), containsInAnyOrder('path1', 'path2'))
+    }
+
+    @Test
+    void 'configures usage task with follows symlinks option'() {
+        project.usage {
+            followLinks = true
+        }
+
+        def task = project.tasks.getByName('usage') as GradleUsageTask
+        assertThat(task.followLinks.get(), is(true))
+    }
+
+    @Test
+    void 'configures usage task with use wrapper version option'() {
+        project.usage {
+            useWrapperVersion = true
+        }
+
+        def task = project.tasks.getByName('usage') as GradleUsageTask
+        assertThat(task.useWrapperVersion.get(), is(true))
     }
 }
