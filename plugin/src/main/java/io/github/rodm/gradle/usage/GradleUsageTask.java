@@ -31,7 +31,6 @@ import org.gradle.tooling.GradleConnector;
 import org.gradle.tooling.ProjectConnection;
 import org.gradle.tooling.model.build.BuildEnvironment;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.nio.file.Files;
@@ -123,7 +122,7 @@ public abstract class GradleUsageTask extends DefaultTask {
     }
 
     private String projectVersion(Path path) {
-        if (getUseWrapperVersion().get()) {
+        if (Boolean.TRUE.equals(getUseWrapperVersion().get())) {
             return projectVersionFromGradleWrapper(path);
         } else {
             return projectVersionFromGradleConnector(path);
@@ -174,7 +173,8 @@ public abstract class GradleUsageTask extends DefaultTask {
     private static void produceProjectList(List<GradleProject> projects, List<String> output) {
         int width = maxVersionLength(projects);
         output.add(format("Found %d Gradle projects", projects.size()));
-        projects.forEach(project -> output.add(format("  %" + width + "s  %s", project.version(), project.path())));
+        String format = format("  %%%ds  %%s", width);
+        projects.forEach(project -> output.add(format(format, project.version(), project.path())));
     }
 
     private static void produceSummary(List<GradleProject> projects, List<String> output) {
@@ -182,10 +182,11 @@ public abstract class GradleUsageTask extends DefaultTask {
                 .map(GradleProject::version)
                 .collect(Collectors.groupingBy(version -> version, Collectors.counting()));
         int width = maxVersionLength(projects);
+        String format = format("  %%%ds used by %%d projects", width);
         output.add("Summary");
         summary.entrySet().stream()
                 .sorted((a, b) -> b.getValue().compareTo(a.getValue()))
-                .forEach(entry -> output.add(format("  %" + width + "s used by %d projects", entry.getKey(), entry.getValue())));
+                .forEach(entry -> output.add(format(format, entry.getKey(), entry.getValue())));
     }
 
     private static int maxVersionLength(List<GradleProject> projects) {
@@ -193,10 +194,10 @@ public abstract class GradleUsageTask extends DefaultTask {
     }
 
     private static void storeReport(List<String> projects, Provider<RegularFile> outputFile) {
-        File output = outputFile.get().getAsFile();
+        Path output = outputFile.get().getAsFile().toPath();
         try {
-            output.createNewFile();
-            Files.write(output.toPath(), projects);
+            Files.createFile(output);
+            Files.write(output, projects);
         }
         catch (IOException e) {
             throw new GradleException("Error creating report", e);
