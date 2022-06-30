@@ -37,9 +37,7 @@ public class GradleUsagePlugin implements Plugin<Project> {
             task.getExcludes().set(extension.getExcludesProperty());
             task.getFollowLinks().set(extension.getFollowLinksProperty());
             task.getUseWrapperVersion().set(extension.getUseWrapperVersionProperty());
-            task.getOutputDirectory().convention(
-                    project.getLayout().getBuildDirectory().dir("reports/usage")
-            );
+            task.getOutputDirectory().set(extension.getOutputDirProperty());
         });
     }
 }

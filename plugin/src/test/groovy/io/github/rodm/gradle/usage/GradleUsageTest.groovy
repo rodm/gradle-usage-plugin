@@ -71,7 +71,7 @@ class GradleUsageTest {
     @Test
     void 'usage task has a default output directory for its report'() {
         GradleUsageTask task = project.tasks.findByName('usage') as GradleUsageTask
-        assertThat(task.outputDirectory.get().asFile.toString(), endsWith('build/reports/usage'))
+        assertThat(task.outputDirectory.get().asFile.absolutePath, endsWith('build/reports/usage'))
     }
 
     @Test
@@ -141,5 +141,25 @@ class GradleUsageTest {
 
         def task = project.tasks.getByName('usage') as GradleUsageTask
         assertThat(task.useWrapperVersion.get(), is(true))
+    }
+
+    @Test
+    void 'configures usage task with output directory for report'() {
+        project.usage {
+            outputDir = 'alt/reports'
+        }
+
+        def task = project.tasks.getByName('usage') as GradleUsageTask
+        assertThat(task.outputDirectory.get().asFile.absolutePath, endsWith('/alt/reports'))
+    }
+
+    @Test
+    void 'configures usage task with output directory for report with directory'() {
+        project.usage {
+            outputDir = project.file('alt/reports')
+        }
+
+        def task = project.tasks.getByName('usage') as GradleUsageTask
+        assertThat(task.outputDirectory.get().asFile.absolutePath, endsWith('/alt/reports'))
     }
 }

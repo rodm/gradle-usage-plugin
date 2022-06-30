@@ -15,11 +15,14 @@
  */
 package io.github.rodm.gradle.usage;
 
+import org.gradle.api.file.DirectoryProperty;
+import org.gradle.api.file.ProjectLayout;
 import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.Property;
 
 import javax.inject.Inject;
+import java.io.File;
 import java.util.List;
 
 public class GradleUsageExtension {
@@ -28,13 +31,16 @@ public class GradleUsageExtension {
     private final ListProperty<String> excludes;
     private final Property<Boolean> followLinks;
     private final Property<Boolean> useWrapperVersion;
+    private final DirectoryProperty outputDir;
 
     @Inject
-    public GradleUsageExtension(ObjectFactory objects) {
+    public GradleUsageExtension(ObjectFactory objects, ProjectLayout layout) {
         this.paths = objects.listProperty(String.class);
         this.excludes = objects.listProperty(String.class);
         this.followLinks = objects.property(Boolean.class).convention(false);
         this.useWrapperVersion = objects.property(Boolean.class).convention(false);
+        this.outputDir = objects.directoryProperty();
+        this.outputDir.convention(layout.getBuildDirectory().dir("reports/usage"));
     }
 
     public List<String> getPaths() {
@@ -83,5 +89,17 @@ public class GradleUsageExtension {
 
     Property<Boolean> getUseWrapperVersionProperty() {
         return useWrapperVersion;
+    }
+
+    public String getOutputDir() {
+        return getOutputDirProperty().get().getAsFile().getAbsolutePath();
+    }
+
+    public void setOutputDir(String path) {
+        outputDir.set(new File(path));
+    }
+
+    DirectoryProperty getOutputDirProperty() {
+        return outputDir;
     }
 }
