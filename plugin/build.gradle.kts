@@ -26,6 +26,12 @@ sourceSets {
     register("functional")
 }
 
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(8))
+    }
+}
+
 configurations["functionalImplementation"].extendsFrom(configurations["testImplementation"])
 
 dependencies {
