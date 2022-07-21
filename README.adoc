@@ -35,7 +35,7 @@ The plugin is published on the {uri-gradle-plugin-portal}[Gradle Plugin Portal]:
 
 * `{plugin-id}` - Provides a task to scan a directory for Gradle projects.
 
-Refer to the Gradle Plugin Portal for instructions on how to apply the {uri-gradle-plugin-portal}plugin/{plugin-id}
+Refer to the Gradle Plugin Portal for instructions on how to apply the {uri-gradle-plugin}[plugin].
 
 === Tasks
 
