@@ -49,6 +49,10 @@ import static java.nio.file.Files.exists;
 
 public abstract class GradleUsageTask extends DefaultTask {
 
+    public GradleUsageTask() {
+        getOutputs().upToDateWhen(element -> false);
+    }
+
     @Input
     public abstract ListProperty<String> getPaths();
 
@@ -196,7 +200,9 @@ public abstract class GradleUsageTask extends DefaultTask {
     private static void storeReport(List<String> projects, Provider<RegularFile> outputFile) {
         Path output = outputFile.get().getAsFile().toPath();
         try {
-            Files.createFile(output);
+            if (Files.notExists(output)) {
+                Files.createFile(output);
+            }
             Files.write(output, projects);
         }
         catch (IOException e) {

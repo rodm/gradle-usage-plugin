@@ -157,6 +157,20 @@ class GradleUsageFunctionalTest {
         assertThat(lines, hasItem(matchesPattern(' +7.4 .*/project3')))
     }
 
+    @Test
+    void 'usage task overwrites report file'() throws IOException {
+        Path projects = dir.resolve('projects')
+        createGradleProject(projects.resolve('project1'), '6.9.2', 'settings.gradle.kts')
+
+        executeBuild(projects)
+        assertThat(readReportLines(), hasItem('Found 1 Gradle projects'))
+
+        createGradleProject(projects.resolve('project2'), '7.4')
+
+        executeBuild(projects)
+        assertThat(readReportLines(), hasItem('Found 2 Gradle projects'))
+    }
+
     private BuildResult executeBuild(Path projects, String... args) {
         GradleRunner runner = GradleRunner.create()
                 .forwardOutput()
