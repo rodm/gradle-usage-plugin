@@ -1,4 +1,5 @@
 
+import com.github.rodm.teamcity.gradle.switchGradleBuildStep
 import com.github.rodm.teamcity.pipeline
 import com.github.rodm.teamcity.project.githubIssueTracker
 
@@ -125,6 +126,26 @@ project {
                         param("gradle.tasks", "clean functionalTest")
                         param("java.home", "%java${javaVersion}.home%")
                     }
+                }
+            }
+
+            build {
+                val javaVersion = "17"
+                val gradleVersion = "7.3"
+                id("BuildFunctionalTestJava${javaVersion}")
+                name = "Build - Functional Test - Java ${javaVersion}"
+                templates(buildTemplate)
+
+                params {
+                    param("gradle.tasks", "clean functionalTest")
+                    param("gradle.version", gradleVersion)
+                    param("default.java.home", "%java8.home%")
+                    param("java.home", "%java${javaVersion}.home%")
+                }
+
+                steps {
+                    switchGradleBuildStep()
+                    stepsOrder = arrayListOf("SWITCH_GRADLE", "GRADLE_BUILD")
                 }
             }
         }
