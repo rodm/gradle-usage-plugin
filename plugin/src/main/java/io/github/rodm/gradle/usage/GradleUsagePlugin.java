@@ -36,7 +36,7 @@ public class GradleUsagePlugin implements Plugin<Project> {
             task.getPaths().set(extension.getPathsProperty());
             task.getExcludes().set(extension.getExcludesProperty());
             task.getFollowLinks().set(extension.getFollowLinksProperty());
-            task.getUseWrapperVersion().set(extension.getUseWrapperVersionProperty());
+            task.getUseGradleConnector().set(extension.getUseGradleConnectorProperty());
             task.getOutputDirectory().set(extension.getOutputDirProperty());
         });
     }

@@ -30,7 +30,7 @@ public class GradleUsageExtension {
     private final ListProperty<String> paths;
     private final ListProperty<String> excludes;
     private final Property<Boolean> followLinks;
-    private final Property<Boolean> useWrapperVersion;
+    private final Property<Boolean> useGradleConnector;
     private final DirectoryProperty outputDir;
 
     @Inject
@@ -38,7 +38,7 @@ public class GradleUsageExtension {
         this.paths = objects.listProperty(String.class);
         this.excludes = objects.listProperty(String.class);
         this.followLinks = objects.property(Boolean.class).convention(false);
-        this.useWrapperVersion = objects.property(Boolean.class).convention(false);
+        this.useGradleConnector = objects.property(Boolean.class).convention(false);
         this.outputDir = objects.directoryProperty();
         this.outputDir.convention(layout.getBuildDirectory().dir("reports/usage"));
     }
@@ -79,16 +79,16 @@ public class GradleUsageExtension {
         return followLinks;
     }
 
-    public boolean getUseWrapperVersion() {
-        return getUseWrapperVersionProperty().get();
+    public boolean getUseGradleConnector() {
+        return getUseGradleConnectorProperty().get();
     }
 
-    public void setUseWrapperVersion(boolean useWrapperVersion) {
-        this.useWrapperVersion.set(useWrapperVersion);
+    public void setUseGradleConnector(boolean useGradleConnector) {
+        this.useGradleConnector.set(useGradleConnector);
     }
 
-    Property<Boolean> getUseWrapperVersionProperty() {
-        return useWrapperVersion;
+    Property<Boolean> getUseGradleConnectorProperty() {
+        return useGradleConnector;
     }
 
     public String getOutputDir() {

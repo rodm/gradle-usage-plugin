@@ -63,9 +63,9 @@ class GradleUsageTest {
     }
 
     @Test
-    void 'usage task default is to not use the Gradle wrapper version'() {
+    void 'usage task default is to not use the Gradle Connector'() {
         GradleUsageTask task = project.tasks.findByName('usage') as GradleUsageTask
-        assertThat(task.useWrapperVersion.get(), is(false))
+        assertThat(task.useGradleConnector.get(), is(false))
     }
 
     @Test
@@ -134,13 +134,13 @@ class GradleUsageTest {
     }
 
     @Test
-    void 'configures usage task with use wrapper version option'() {
+    void 'configures usage task with use gradle connector option'() {
         project.usage {
-            useWrapperVersion = true
+            useGradleConnector = true
         }
 
         def task = project.tasks.getByName('usage') as GradleUsageTask
-        assertThat(task.useWrapperVersion.get(), is(true))
+        assertThat(task.useGradleConnector.get(), is(true))
     }
 
     @Test

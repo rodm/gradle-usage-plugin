@@ -109,7 +109,7 @@ class GradleUsageFunctionalTest {
         properties.put('distributionUrl', 'http://services.gradle.org/distributions/gradle-1.0-bin.zip')
         properties.store(Files.newOutputStream(wrapperPath), null)
 
-        executeBuild(projects)
+        executeBuild(projects, '--use-gradle-connector')
 
         List<String> lines = readReportLines()
         assertThat(lines, hasItem('Found 2 Gradle projects'))
@@ -139,13 +139,13 @@ class GradleUsageFunctionalTest {
     }
 
     @Test
-    void 'usage task finds Gradle projects using only wrapper properties'() throws IOException {
+    void 'usage task finds Gradle project versions using the Gradle connector'() throws IOException {
         Path projects = dir.resolve('projects')
         createGradleProject(projects.resolve('project1'), '5.6.4')
         createGradleProject(projects.resolve('project2'), '6.9.2', 'settings.gradle.kts')
         createGradleProject(projects.resolve('project3'), '7.4')
 
-        executeBuild(dir, '--use-wrapper-version')
+        executeBuild(dir, '--use-gradle-connector')
 
         File reportFile = dir.resolve(REPORT_PATH).toFile()
         assertThat(reportFile, anExistingFile())

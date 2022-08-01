@@ -63,7 +63,7 @@ public abstract class GradleUsageTask extends DefaultTask {
     public abstract Property<Boolean> getFollowLinks();
 
     @Input
-    public abstract Property<Boolean> getUseWrapperVersion();
+    public abstract Property<Boolean> getUseGradleConnector();
 
     @OutputDirectory
     public abstract DirectoryProperty getOutputDirectory();
@@ -83,9 +83,9 @@ public abstract class GradleUsageTask extends DefaultTask {
         getFollowLinks().set(followLinks);
     }
 
-    @Option(option = "use-wrapper-version", description = "Use the version from the Gradle Wrapper properties file.")
-    public void setUseWrapperVersionOption(boolean useWrapperVersion) {
-        getUseWrapperVersion().set(useWrapperVersion);
+    @Option(option = "use-gradle-connector", description = "Use the version from the Gradle Connector.")
+    public void setUseGradleConnectorOption(boolean useGradleConnector) {
+        getUseGradleConnector().set(useGradleConnector);
     }
 
     @TaskAction
@@ -126,10 +126,10 @@ public abstract class GradleUsageTask extends DefaultTask {
     }
 
     private String projectVersion(Path path) {
-        if (Boolean.TRUE.equals(getUseWrapperVersion().get())) {
-            return projectVersionFromGradleWrapper(path);
-        } else {
+        if (Boolean.TRUE.equals(getUseGradleConnector().get())) {
             return projectVersionFromGradleConnector(path);
+        } else {
+            return projectVersionFromGradleWrapper(path);
         }
     }
 
