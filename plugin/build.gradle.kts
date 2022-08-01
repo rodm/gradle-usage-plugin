@@ -8,7 +8,7 @@ plugins {
     id ("org.sonarqube") version "3.4.0.2513"
 }
 
-version = "0.4"
+version = "0.5-SNAPSHOT"
 group = "io.github.rodm"
 
 base {
