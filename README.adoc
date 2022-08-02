@@ -46,8 +46,8 @@ Options
 ** `--dir` : A directory to search for Gradle projects. The option can be specified multiple times.
 ** `--exclude-dir` : A directory to exclude from the search. The option can be specified multiple times.
 ** `--follow-links` : Configure the search to follow symbolic links.
-** `--use-wrapper-version` : Use the version from the Gradle Wrapper properties file. The default is to
-use the version returned by the Gradle Connector.
+** `--use-gradle-connector` : Use the version returned by the Gradle Connector. The default is to
+use the version returned from the Gradle Wrapper properties file.
 
 === Extension Properties
 
@@ -56,8 +56,8 @@ The following properties are defined in the `usage` configuration block.
 * `path` : A directory to search for Gradle projects.
 * `exclude` :  A directory to exclude from the search.
 * `followLinks` : An option flag to follow symbolic links, default is false.
-* `useWrapperVersion` : An option flag to use the version found in the Gradle Wrapper properties file, default is to
-use the version returned by the Gradle Connector.
+* `useGradleConnector` : An option flag to use the version returned by the Gradle Connector, default is to
+use the version from the Gradle Wrapper properties file.
 * `outputDir` : The output directory to write the report, default is 'build/reports/usage'.
 
 ==== Example
@@ -70,7 +70,7 @@ use the version returned by the Gradle Connector.
         path ("/Users/rod/Projects")
         exclude ("/Users/rod/Projects/ExcludedProject")
         followLinks = true
-        useWrapperVersion = true
+        useGradleConnector = true
         outputDir = "$buildDir/reports/usage"
     }
 ----
