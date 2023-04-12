@@ -4,15 +4,15 @@ plugins {
     id ("groovy")
     id ("jacoco")
     id ("maven-publish")
-    id ("com.gradle.plugin-publish") version "1.0.0"
-    id ("org.sonarqube") version "3.4.0.2513"
+    id ("com.gradle.plugin-publish") version "1.2.0"
+    id ("org.sonarqube") version "4.0.0.2929"
 }
 
 version = "0.5"
 group = "io.github.rodm"
 
 base {
-    archivesBaseName = "gradle-usage-plugin"
+    archivesName.set("gradle-usage-plugin")
 }
 
 repositories {
