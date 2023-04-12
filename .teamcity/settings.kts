@@ -11,7 +11,7 @@ import jetbrains.buildServer.configs.kotlin.triggers.vcs
 import jetbrains.buildServer.configs.kotlin.vcs.GitVcsRoot
 import jetbrains.buildServer.configs.kotlin.vcs.GitVcsRoot.AgentCheckoutPolicy.NO_MIRRORS
 
-version = "2022.04"
+version = "2022.10"
 
 project {
 
@@ -114,7 +114,7 @@ project {
         stage("Functional Tests") {
             matrix {
                 axes {
-                    "Java"("8", "11")
+                    "Java"("8", "11", "17")
                 }
                 build {
                     val javaVersion = axes["Java"]
@@ -126,26 +126,16 @@ project {
                         param("gradle.tasks", "clean functionalTest")
                         param("java.home", "%java${javaVersion}.home%")
                     }
-                }
-            }
-
-            build {
-                val javaVersion = "17"
-                val gradleVersion = "7.3"
-                id("BuildFunctionalTestJava${javaVersion}")
-                name = "Build - Functional Test - Java ${javaVersion}"
-                templates(buildTemplate)
-
-                params {
-                    param("gradle.tasks", "clean functionalTest")
-                    param("gradle.version", gradleVersion)
-                    param("default.java.home", "%java8.home%")
-                    param("java.home", "%java${javaVersion}.home%")
-                }
-
-                steps {
-                    switchGradleBuildStep()
-                    stepsOrder = arrayListOf("SWITCH_GRADLE", "GRADLE_BUILD")
+                    if (javaVersion == "17") {
+                        params {
+                            param("default.java.home", "%java8.home%")
+                            param("gradle.version", "7.3")
+                        }
+                        steps {
+                            switchGradleBuildStep()
+                            stepsOrder = arrayListOf("SWITCH_GRADLE", "GRADLE_BUILD")
+                        }
+                    }
                 }
             }
         }
