@@ -4,7 +4,7 @@ plugins {
     id ("groovy")
     id ("jacoco")
     id ("maven-publish")
-    id ("com.gradle.plugin-publish") version "1.2.0"
+    id ("com.gradle.plugin-publish") version "1.2.1"
     id ("org.sonarqube") version "4.0.0.2929"
 }
 
@@ -46,20 +46,18 @@ dependencies {
 gradlePlugin {
     testSourceSets (sourceSets["functional"])
 
+    website = "https://github.com/rodm/gradle-usage-plugin"
+    vcsUrl = "https://github.com/rodm/gradle-usage-plugin"
+
     plugins {
         register("plugin") {
             id = "io.github.rodm.gradle-usage"
             displayName = "Gradle Usage plugin"
             description = "A plugin that scans a directory tree and produces a report of Gradle projects and versions used."
             implementationClass = "io.github.rodm.gradle.usage.GradleUsagePlugin"
+            tags = listOf("usage")
         }
     }
-}
-
-pluginBundle {
-    website = "https://github.com/rodm/gradle-usage-plugin"
-    vcsUrl = "https://github.com/rodm/gradle-usage-plugin"
-    tags = listOf("usage")
 }
 
 sonarqube {
