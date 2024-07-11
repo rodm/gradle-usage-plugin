@@ -2,6 +2,7 @@
 import com.github.rodm.teamcity.gradle.switchGradleBuildStep
 import com.github.rodm.teamcity.pipeline
 import com.github.rodm.teamcity.project.githubIssueTracker
+import jetbrains.buildServer.configs.kotlin.buildFeatures.perfmon
 
 import jetbrains.buildServer.configs.kotlin.version
 import jetbrains.buildServer.configs.kotlin.project
@@ -11,7 +12,7 @@ import jetbrains.buildServer.configs.kotlin.triggers.vcs
 import jetbrains.buildServer.configs.kotlin.vcs.GitVcsRoot
 import jetbrains.buildServer.configs.kotlin.vcs.GitVcsRoot.AgentCheckoutPolicy.NO_MIRRORS
 
-version = "2022.10"
+version = "2024.03"
 
 project {
 
@@ -74,10 +75,7 @@ project {
         }
 
         features {
-            feature {
-                id = "perfmon"
-                type = "perfmon"
-            }
+            perfmon {}
         }
     }
 
@@ -90,7 +88,7 @@ project {
                 build {
                     val javaVersion = axes["Java"]
                     id("BuildJava${javaVersion}")
-                    name = "Build - Java ${javaVersion}"
+                    name = "Build - Java $javaVersion"
                     templates(buildTemplate)
 
                     params {
@@ -106,7 +104,7 @@ project {
 
                 params {
                     param("gradle.opts", "%sonar.opts%")
-                    param("gradle.tasks", "clean build sonarqube")
+                    param("gradle.tasks", "clean build sonar")
                 }
             }
         }
@@ -119,7 +117,7 @@ project {
                 build {
                     val javaVersion = axes["Java"]
                     id("BuildFunctionalTestJava${javaVersion}")
-                    name = "Build - Functional Test - Java ${javaVersion}"
+                    name = "Build - Functional Test - Java $javaVersion"
                     templates(buildTemplate)
 
                     params {
