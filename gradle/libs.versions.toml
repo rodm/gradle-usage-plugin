@@ -1,0 +1,11 @@
+
+[plugins]
+plugin-publish = { id = "com.gradle.plugin-publish", version = "1.2.1" }
+sonarqube = { id = "org.sonarqube", version = "4.0.0.2929" }
+
+[libraries]
+gradle-tooling = { module = "org.gradle:gradle-tooling-api", version = "7.0"}
+junit-bom = { module = "org.junit:junit-bom", version = "5.10.3" }
+junit-jupiter = { module = "org.junit.jupiter:junit-jupiter" }
+junit-launcher = { module = "org.junit.platform:junit-platform-launcher" }
+hamcrest = { module = "org.hamcrest:hamcrest", version = "2.2" }

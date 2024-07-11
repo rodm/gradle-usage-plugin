@@ -4,8 +4,8 @@ plugins {
     id ("groovy")
     id ("jacoco")
     id ("maven-publish")
-    id ("com.gradle.plugin-publish") version "1.2.1"
-    id ("org.sonarqube") version "4.0.0.2929"
+    alias (libs.plugins.plugin.publish)
+    alias (libs.plugins.sonarqube)
 }
 
 version = "0.6-SNAPSHOT"
@@ -35,12 +35,12 @@ java {
 configurations["functionalImplementation"].extendsFrom(configurations["testImplementation"])
 
 dependencies {
-    compileOnly("org.gradle:gradle-tooling-api:7.0")
+    compileOnly (libs.gradle.tooling)
 
-    testImplementation(platform("org.junit:junit-bom:5.8.2"))
-    testImplementation("org.junit.jupiter:junit-jupiter")
-    testImplementation("org.hamcrest:hamcrest:2.2")
-    testImplementation("org.gradle:gradle-tooling-api:7.0")
+    testImplementation (platform(libs.junit.bom))
+    testImplementation (libs.junit.jupiter)
+    testImplementation (libs.hamcrest)
+    testImplementation (libs.gradle.tooling)
 }
 
 gradlePlugin {
