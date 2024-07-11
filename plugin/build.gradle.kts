@@ -12,7 +12,7 @@ version = "0.6-SNAPSHOT"
 group = "io.github.rodm"
 
 base {
-    archivesName.set("gradle-usage-plugin")
+    archivesName = "gradle-usage-plugin"
 }
 
 repositories {
@@ -28,7 +28,7 @@ sourceSets {
 
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(8))
+        languageVersion = JavaLanguageVersion.of(8)
     }
 }
 
@@ -72,16 +72,16 @@ sonarqube {
 tasks {
     test {
         useJUnitPlatform()
-        finalizedBy(named("jacocoTestReport"))
+        finalizedBy(jacocoTestReport)
     }
 
-    named<JacocoReport>("jacocoTestReport") {
+    jacocoTestReport {
         reports {
-            xml.required.set(true)
+            xml.required = true
         }
     }
 
-    register("functionalTest", Test::class.java) {
+    register<Test>("functionalTest") {
         description = "Runs the functional tests."
         group = "verification"
         useJUnitPlatform()
