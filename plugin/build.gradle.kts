@@ -41,6 +41,8 @@ dependencies {
     testImplementation (libs.junit.jupiter)
     testImplementation (libs.hamcrest)
     testImplementation (libs.gradle.tooling)
+
+    testRuntimeOnly (libs.junit.launcher)
 }
 
 gradlePlugin {
