@@ -1,5 +1,4 @@
 
-import com.github.rodm.teamcity.gradle.switchGradleBuildStep
 import com.github.rodm.teamcity.pipeline
 import com.github.rodm.teamcity.project.githubIssueTracker
 import jetbrains.buildServer.configs.kotlin.buildFeatures.perfmon
@@ -123,16 +122,6 @@ project {
                     params {
                         param("gradle.tasks", "clean functionalTest")
                         param("java.home", "%java${javaVersion}.home%")
-                    }
-                    if (javaVersion == "17") {
-                        params {
-                            param("default.java.home", "%java8.home%")
-                            param("gradle.version", "7.3")
-                        }
-                        steps {
-                            switchGradleBuildStep()
-                            stepsOrder = arrayListOf("SWITCH_GRADLE", "GRADLE_BUILD")
-                        }
                     }
                 }
             }
