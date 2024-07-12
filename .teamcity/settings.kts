@@ -111,7 +111,7 @@ project {
         stage("Functional Tests") {
             matrix {
                 axes {
-                    "Java"("8", "11", "17")
+                    "Java"("8", "11", "17", "21")
                 }
                 build {
                     val javaVersion = axes["Java"]
