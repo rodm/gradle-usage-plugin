@@ -33,6 +33,7 @@ java {
 }
 
 configurations["functionalImplementation"].extendsFrom(configurations["testImplementation"])
+configurations["functionalRuntimeOnly"].extendsFrom(configurations["testRuntimeOnly"])
 
 dependencies {
     compileOnly (libs.gradle.tooling)
