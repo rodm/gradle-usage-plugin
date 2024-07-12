@@ -1,16 +1,22 @@
 = Gradle Usage plugin
+:project-name: gradle-usage-plugin
+:project-group: io.github.rodm
 :plugin-id: io.github.rodm.gradle-usage
-:uri-github-project: https://github.com/rodm/gradle-usage-plugin
+:uri-github: https://github.com
+:uri-github-project: {uri-github}/rodm/{project-name}
 :uri-github-actions: {uri-github-project}/actions
-:uri-github-status: {uri-github-project}/workflows/Build/badge.svg
-:uri-shields-gradle-portal: https://img.shields.io/gradle-plugin-portal/v
+:uri-github-status: {uri-github-actions}/workflows/build.yml/badge.svg
+:uri-shields: https://img.shields.io
+:uri-shields-gradle-portal: {uri-shields}/gradle-plugin-portal/v
 :uri-apache-license: https://www.apache.org/licenses/LICENSE-2.0.html[Apache License, Version 2.0]
+:uri-project-license: {uri-shields}/github/license/rodm/{project-name}
 :uri-gradle-plugin-portal: https://plugins.gradle.org
 :uri-gradle-plugin: {uri-gradle-plugin-portal}/plugin/{plugin-id}
 :uri-gradle-plugin-version: {uri-shields-gradle-portal}/{plugin-id}
 
 image:{uri-github-status}?branch=main["Build Status", link="{uri-github-actions}"]
 image:{uri-gradle-plugin-version}?label=Gradle%20Plugin%20Portal[Gradle Plugin Portal, link="{uri-gradle-plugin}"]
+image:{uri-project-license}?label=License[License]
 
 The plugin adds a new task that scans a directory tree for Gradle projects and produces a report
 listing the projects and the version of Gradle used.
